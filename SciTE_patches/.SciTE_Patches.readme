@@ -1,0 +1,23 @@
+------------------------
+ How to apply:
+-----------------------
+
+cd scite364 (unpatched)
+
+Verzeichnis von E:\playground\local_tree\scite364_vanilla
+
+13.03.2016  23:12    <DIR>          .
+13.03.2016  23:12    <DIR>          ..
+13.03.2016  23:11    <DIR>          scintilla
+13.03.2016  23:11    <DIR>          scite_vanilla
+16.01.2016  01:48             2.357 1_scite_364_portable.diff
+24.03.2016  00:51            27.353 2_scite_364_user.toolbar.diff
+25.06.2016  15:44             1.619 3_scite_364_autocomplete.diff
+25.06.2016  15:46            15.066 4_scite_364_cleanOptionsMenue.diff
+               4 Datei(en),         46.395 Bytes
+               4 Verzeichnis(se), 22.505.652.224 Bytes frei
+
+E:\playground\local_tree\scite364_vanilla> patch -p0 < 1_scite_364_portable.diff 
+E:\playground\local_tree\scite364_vanilla> patch -p0 < 2_scite_364_user.toolbar.diff
+
+------------------------
