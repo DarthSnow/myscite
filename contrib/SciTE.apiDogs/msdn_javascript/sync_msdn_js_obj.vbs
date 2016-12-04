@@ -1,5 +1,5 @@
-'build@  cscript.exe //x  /NOLOGO $(FilePath)
- '-----------------------------------------------------------------------------
+' build@ cscript.exe /NOLOGO //D $(FilePath)
+'-----------------------------------------------------------------------------
 '   MSDN-Fetcher;  Syncs Content with https://msdn.microsoft.com/
 '   Status:  20151123 Redo Sync, Add oApiDescr. oApiParams, use IE StatusBar
 '   vba.module - works on VbScript too.
@@ -26,10 +26,10 @@ Dim oMyCatList 'As Collection
 
 ' URL-Laden
 ' ---  Javascript Properties https://msdn.microsoft.com/en-us/library/xyad316h(v=vs.94).aspx
-' --- IE Objekt Link:' http://msdn.microsoft.com/en-us/library/aa752084%28v=vs.85%29.aspx#properties
+' --- Javascript Objekts Link:' https://msdn.microsoft.com/en-us/library/htbw4ywd(v=vs.94).aspx
   obrowser.Navigate2 ("https://msdn.microsoft.com/en-us/library/htbw4ywd(v=vs.94).aspx")
-  sFolder = "msdn_js_obj"
-  sFileName = "msdn.js.obj.raw"     
+  sFolder = "msdn_js_api"
+  sFileName = "msdn.js.api.raw"     
 
     result = fParseResults(obrowser)
     obrowser.Quit

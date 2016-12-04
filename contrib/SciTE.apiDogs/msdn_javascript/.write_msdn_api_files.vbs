@@ -8,8 +8,8 @@ Dim ArrEntry()
 dim sFileName
 
   Set oFso = CreateObject("scripting.FilesystemObject")
-  Set oFile_links = oFso.OpenTextFile("msdn.js.obj.raw", 1, True) ' forRead, CreateFlag
-  sFileName ="js_obj.api.raw"
+  Set oFile_links = oFso.OpenTextFile("msdn.js.api.raw", 1, True) ' forRead, CreateFlag
+  sFileName ="javascript.api.raw"
   
   ' ---- Start Parsing, fill oEntries
   On Error Resume Next
@@ -101,8 +101,8 @@ Private Function Write_API(oFileLinks, oEntries)
 
 	api_descr =oEntry("LinkDescr")
 	
-      '-------- Insert multiline break to Descriptions > 79 chars
-        If Len(api_descr) > 68 Then
+      '-------- Insert multiline break to Descriptions > 75 chars
+        If Len(api_descr) > 75 Then
           spacepos = 0: dotpos = 0: 
           spacepos = InStr(58, api_descr, " ") ' search for a good place,try to be a bit clever.
           dotpos = InStr(40, api_descr, ".")
@@ -117,11 +117,10 @@ Private Function Write_API(oFileLinks, oEntries)
 	
 	'vba Debug.Print sApiPrefix & oEntry("LinkName") & oEntry("LinkParams") & " " & oEntry("LinkDescr") & sParentObject & "\t\n" & oEntry("oApiSyntax")
 
-    ofile_Api.Write sApiPrefix  oEntry("LinkName") & oEntry("LinkParams") & " " & "---- \t\n" _
-    & api_descr & "\t\n( JavaScript " & sParentObject & " )\t\n" & "---- \t\n" & oEntry("oApiSyntax") & vbCrLf
+    ofile_Api.Write  sApiPrefix & oEntry("LinkName") & oEntry("LinkParams") & " " & api_descr & "\t\n" & oEntry("oApiSyntax") & vbCrLf
  
   ' --- As we have two outputs, check if we already wrote it.
-    sDupeCheck = sApiPrefix & oEntry("LinkName")
+    sDupeCheck =  sApiPrefix & oEntry("LinkName")
  
   ' ---  Now, once again, but lets only store Object functions with a trailing dot
   ' --- (so ArrayBuffer.slice will get .slice )
@@ -132,12 +131,7 @@ Private Function Write_API(oFileLinks, oEntries)
     
    If Not (sDupeCheck = sFnPrefix & oEntry("LinkName")) Then
       ' vba Debug.Print sFnPrefix & oEntry("LinkName") & oEntry("LinkParams") & " " & oEntry("LinkDescr") & " -->" & sParentObject & "\t\n" & " " & oEntry("oApiSyntax")
-       ofile_Api.Write sFnPrefix _
-       & oEntry("LinkName") & oEntry("LinkParams") & "\t\n " _
-	   & "---- \t\n" _
-       & api_descr & "\t\n( JavaScript " & sParentObject & " )\t\n" _
-	   & "----\t\n" _
-       & oEntry("oApiSyntax") & vbCrLf
+      ' ofile_Api.Write sFnPrefix & oEntry("LinkName") & oEntry("LinkParams") & "\t\n " & "---- \t\n" & api_descr & "----\t\n" & oEntry("oApiSyntax") & vbCrLf
    End If
     
   Next
