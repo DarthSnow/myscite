@@ -3,10 +3,10 @@
 :: can be used to avoid Chaos. Provides version specifc Language Distbins within respective Directories. 
 :: ---------------------------------------
 
-set toolFolder=beautifier\uncrustify
-set toolName=uncrustify
+set toolFolder=beautifier\astyle
+set toolName=astyle
 set toolExt=.exe
-set toolParam=-c %~dp0%toolFolder%\linux.cfg --no-backup %*
+set toolParam=--style=attach --indent=force-tab=8 --keep-one-line-blocks --pad-header --unpad-paren --pad-comma --indent-cases --align-pointer=name %*
 
 :: A value of 1 will force the wrapper to restrict  PATH for toolName (useful for eg tdm/mingw buidChains) 
 set sandbox=0

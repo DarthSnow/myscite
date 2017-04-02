@@ -3,12 +3,12 @@
 :: can be used to avoid Chaos. Provides version specifc Language Distbins within respective Directories. 
 :: ---------------------------------------
 
-set toolFolder=beautifier\uncrustify
-set toolName=uncrustify
+set toolFolder=nodejs
+set toolName=node
 set toolExt=.exe
-set toolParam=-c %~dp0%toolFolder%\linux.cfg --no-backup %*
+set toolParam=%*
 
-:: A value of 1 will force the wrapper to restrict  PATH for toolName (useful for eg tdm/mingw buidChains) 
+:: A value of 1 will force the wrapper to restrict PATH for toolName (useful for eg tdm/mingw buidChains) 
 set sandbox=0
 
 :: -------- No need to edit below here ---------- ::
@@ -33,7 +33,7 @@ if [%sandbox%]==[1] goto :err
 where /Q %toolName%%toolExt%
 
 IF %ERRORLEVEL% == 0 (
-REM  echo ~ WRapper: %toolPath%\%toolName%%toolExt% %toolParam% >&2
+REM echo ~ WRapper: %toolPath%\%toolName%%toolExt% %toolParam% >&2
 where %toolName%%toolExt%
 %toolName%%toolExt% %toolParam%
 goto :freude ) else (  goto :err )
