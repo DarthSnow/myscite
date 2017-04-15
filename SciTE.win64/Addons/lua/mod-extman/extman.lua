@@ -13,13 +13,6 @@
 --~ package.path = package.path..';C:\\lang\\lua\\lua\\?.lua'
 --~ package.cpath = package.cpath..';c:\\lang\\lua\\?.dll'
 
-defaultHome = props["SciteDefaultHome"]
-package.path =  package.path ..";"..defaultHome.."\\Addons\\?.lua;".. ";"..defaultHome.."\\Addons\\lua\\lua\\?.lua;"
-package.path=package.path..";C:\\Program Files (x86)\\Lua\\5.1\\lua\\?.lua"
-package.path = package.path .. ";"..defaultHome.."\\Addons\\lua\\mod-extman\\?.lua;"
-
-package.cpath = package.cpath .. ";"..defaultHome.."\\Addons\\lua\\c\\?.dll;"
-
 -- useful function for getting a property, or a default if not present.
 function scite_GetProp(key,default)
    local val = props[key]
@@ -55,6 +48,8 @@ local size = table.getn
 local sub = string.sub
 local gsub = string.gsub
 
+
+local _DirChange = {}
 
 -- file must be quoted if it contains spaces!
 function quote_if_needed(target)
@@ -158,6 +153,12 @@ end
 function OnClose()
     return DispatchOne(_Close)
 end
+
+--arjunea ported from "official" lua5.1/scites switch_buffers.lua
+function scite_OnDirChange(dir)
+  return DispatchOne(_DirChange,dir)	
+end
+
 
 -- may optionally ask that this handler be immediately
 -- removed after it's called
@@ -287,7 +288,7 @@ end
 
  local word_start,in_word,current_word
 -- (Nicolas) this is in Ascii as SciTE always passes chars in this "encoding" to OnChar
-local wordchars = '[A-Za-zï¿½-ï¿½ï¿½-ï¿½]'  -- wuz %w
+local wordchars = '[A-Za-zÀ-Ýà-ÿ]'  -- wuz %w
 
  local function on_word_char(s)
      if not in_word then
@@ -414,7 +415,7 @@ function path_of(s)
 end
 
 local extman_path = path_of(props['ext.lua.startup.script'])
-local lua_path = scite_GetProp('ext.lua.directory',extman_path..dirsep..'scite-lua')
+local lua_path = scite_GetProp('ext.lua.directory',extman_path..dirsep..'scite_lua')
 
 function extman_Path()
     return extman_path
@@ -884,7 +885,11 @@ end
 --~    silent_dofile(current_file)
 --~ end
 
+--~ require"remdebug.engine"
+--~ remdebug.engine.start()
+
 -- chainload eventmanager / extman remake used by some lua mods
 dofile(props["SciteDefaultHome"]..'\\Addons\\lua\\mod-extman\\eventmanager.lua')
+
 -- Load SciTEStartup.lua
-dofile(props["SciteDefaultHome"]..'\\Addons\\lua\\SciTEStartup.lua') 
+--dofile(props["SciteDefaultHome"]..'\\Addons\\lua\\SciTEStartup.lua') 
