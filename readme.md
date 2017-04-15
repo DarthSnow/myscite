@@ -1,12 +1,12 @@
 ~- mySciTE.webdev -~
 
-[31.März.2017] BETA-1.50
+[13.04.2017] STABLE-1.50
 - Rebased from wScite 3.6.7 to 3.7.0
 - Update lPeg from .10 to .12
 - Fix scites variable Expansion for "Import" Statement 
 - Add Powershell / Matlab / VHDL / Markdown / Rust / r props.
  - Support simple Markdown for plainText files.
-- Enhance Installer Script / Redone theme.coffee
+- Enhance Installer Script / Redone theme.coffee / theme.grey
  - Cleaned Build System / Moved SciTE-Lua-Libs to an own Repo. 
 - Scintillua for win64 & linux ports.
 
