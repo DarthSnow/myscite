@@ -44,14 +44,14 @@ dofile(props["SciteDefaultHome"]..'\\Addons\\lua\\mod-sidebar\\URL_detect.lua')
 	
 function markLinks()
 --
--- search for links and highlight them HTTP://ww.bla.de
+-- search for textlinks and highlight them http://bla.de/bla
 --
 	local marker= 1
-	prefix="http.*://"  -- Rules: Begins with http(s):// 
-	body=".*\\." 	-- must have at least one dot in 
-	suffix="[^ \t\r\n\"\']+" 	-- ends with space, newline, " or '
-	mask=prefix..body..suffix
-	--EditorClearMarks(marker)
+	prefix="http[:|s]+//"  -- Rules: Begins with http(s):// 
+	body="[a-zA-Z0-9]?." 	-- followed by a word  (eg www or the domain)
+	suffix="[^ \r\n\"\'<]+" 	-- ends with space, newline < " or '
+	mask=prefix..body..suffix 
+	EditorClearMarks(marker)
 	local s,e = editor:findtext( mask, SCFIND_REGEXP, 0)
 	while s do
 		EditorMarkText(s, e-s, marker) 
@@ -59,13 +59,14 @@ function markLinks()
 	end
 end
 
-function OnSwitchFile(p)
-	--
-	-- Neals funny Cursor colors :) for loadFile / bufferSwitch   
-	--
-	scite.SendEditor(SCI_SETCARETFORE, 0x615DA1) 
+function OnOpen(p)
 	 markLinks()
 end
 
+function OnSwitchFile(p)
+	scite.SendEditor(SCI_SETCARETFORE, 0x615DA1) 	-- Neals funny Cursor colors :) for loadFile / bufferSwitch   
+	markLinks()
+end
+
 -- Test MenuCommand
---scite.MenuCommand(IDM_MONOFONT)
+-- scite.MenuCommand(IDM_MONOFONT)

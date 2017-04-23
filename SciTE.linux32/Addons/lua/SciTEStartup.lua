@@ -3,7 +3,7 @@ io.stdout:setvbuf("no")
 
 defaultHome = props["SciteDefaultHome"]
 package.path =  package.path ..";"..defaultHome.."/Addons/?.lua;".. ";"..defaultHome.."/Addons/lua/lua/?.lua;"
-package.cpath = package.cpath .. ";"..defaultHome.."/Addons/lua/c/?.dll;"
+package.cpath = package.cpath .. ";"..defaultHome.."/Addons/lua/c/?.so;"
 
 ---- SciTEStartup.lua gets called by extman, to ensure its available here.
 -- Load mod-mitchell 
@@ -14,10 +14,33 @@ dofile(props["SciteDefaultHome"]..'/Addons/lua/mod-mitchell/scite.lua')
 package.path = package.path .. ";"..defaultHome.."/Addons/lua/mod-hunspell/?.lua;"
 dofile(props["SciteDefaultHome"]..'/Addons/lua/mod-orthospell/orthospell.lua')
 
+-- ################## Lua Samples #####################
 
---print("lua: startup script reload ")
---function OnMarginClick(modifiers,position,margin)
---print(modifiers)
-	--return true
---end
+function markLinks()
+--
+-- search for textlinks and highlight them http://bla.de/bla
+--
+	local marker= 1
+	prefix="http[:|s]+//"  -- Rules: Begins with http(s):// 
+	body="[a-zA-Z0-9]?." 	-- followed by a word  (eg www or the domain)
+	suffix="[^ \r\n\"\'<]+" 	-- ends with space, newline < " or '
+	mask=prefix..body..suffix 
+	EditorClearMarks(marker)
+	local s,e = editor:findtext( mask, SCFIND_REGEXP, 0)
+	while s do
+		EditorMarkText(s, e-s, marker) 
+		s,e =  editor:findtext( mask, SCFIND_REGEXP, s+1)
+	end
+end
 
+function OnOpen(p)
+	 markLinks()
+end
+
+function OnSwitchFile(p)
+	scite.SendEditor(SCI_SETCARETFORE, 0x615DA1) 	-- Neals funny Cursor colors :) for loadFile / bufferSwitch   
+	markLinks()
+end
+
+-- Test MenuCommand
+-- scite.MenuCommand(IDM_MONOFONT)
