@@ -1,3 +1,5 @@
+///@brief Redefine Scites Options Menu. Introduces Submenus Edit, Config Files and Languages.
+// rework SciteBase::readEnvironment to be more readable.
 diff -Nurw scintilla-scite/gtk/SciTEGTK.cxx scite/gtk/SciTEGTK.cxx
 --- scintilla-scite/gtk/SciTEGTK.cxx	2017-03-07 23:19:44.000000000 +0100
 +++ scite/gtk/SciTEGTK.cxx	2017-02-26 07:28:04.000000000 +0100
@@ -85,10 +87,10 @@ diff -Nurw scintilla-scite/src/SciTEProps.cxx scite/src/SciTEProps.cxx
 -				SetMenuItem(menuOptions, IMPORT_START + stackPos, itemID, entry.c_str());
 +				std::string sEntry= GUI::UTF8FromString(entry);
 +				//  Depends on Foldernames to display properties sorted.
-+				if (sEntry.find("theme") != std::string::npos or sEntry.find("ddons") != std::string::npos)
-+						SetMenuItemNew(menuOptions, 2, IMPORT_START+stackPos, itemID, entry.c_str());
++				if (sEntry.find("theme") != std::string::npos || sEntry.find("ddons") != std::string::npos)
++						SetMenuItemNew(menuOptions, 3, IMPORT_START+stackPos, itemID, entry.c_str());
 +				if (sEntry.find("lang") != std::string::npos)
-+						SetMenuItemNew(menuOptions, 3, stackPos, itemID, entry.c_str()); 
++						SetMenuItemNew(menuOptions, 4, stackPos, itemID, entry.c_str()); 
  			}
  		}
  	}

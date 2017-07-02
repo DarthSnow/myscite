@@ -1,3 +1,4 @@
+///@brief Introduce Menu Debug and add Window Messages 601-611. 
 diff -Nurw scintilla-scite/src/SciTE.h scite/src/SciTE.h
 --- scintilla-scite/src/SciTE.h	2017-01-20 21:49:26.000000000 +0100
 +++ scite/src/SciTE.h	2017-01-20 17:46:14.000000000 +0100
@@ -162,7 +163,7 @@ diff -Nurw scintilla-scite/win32/SciTERes.rc scite/win32/SciTERes.rc
  
  	VK_F11, IDM_FULLSCREEN,  VIRTKEY
  	VK_F11, IDM_MONOFONT,  VIRTKEY, CONTROL
-+	VK_F11, IDM_DBG_STEPOUT,  VIRTKEY ALT, CONTROL
++	VK_F11, IDM_DBG_STEPOUT,  VIRTKEY, ALT, CONTROL
 
 + "L",  IDM_DBG_LOC, VIRTKEY, CONTROL, ALT
 + "B",	IDM_DBG_BT,VIRTKEY, CONTROL, ALT
