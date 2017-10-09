@@ -17,7 +17,7 @@
 
 #include "Convert.bi"
 
-declare function DlgProc(byval hWnd as HWND,byval uMsg as UINT,byval wParam as WPARAM,byval lParam as LPARAM) as integer
+declare function DlgProc(byval hWnd as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as integer
 
 '''
 ''' Program start
@@ -38,7 +38,7 @@ declare function DlgProc(byval hWnd as HWND,byval uMsg as UINT,byval wParam as W
 ''' Program end
 '''
 
-Sub Convert(byval sInputFile as string,byval sOutputFile as string)
+Sub Convert(byval sInputFile as string, byval sOutputFile as string)
   Dim sLine As String
   Dim sApi As String
   Dim i As Integer
@@ -49,7 +49,7 @@ Sub Convert(byval sInputFile as string,byval sOutputFile as string)
   Do While Not EOF(1)
     Line Input #1, sLine
     If LCase(Left(sLine, 8)) = "declare " Then
-      sLine=Mid(sLine,9)
+      sLine= Mid(sLine,9)
     EndIf
     If LCase(Left(sLine, 9)) = "function " Or Left(sLine, 4) = "sub " Then
       iPos = InStr(sLine, """")
