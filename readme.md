@@ -1,14 +1,26 @@
 ~ mySciTE.webdev ~
 
-[09.10.2017] myScite.160
+[24.11.2017] mySciTE.stable.180.Artie
+- Add: Lisp / Scheme / Clojure / GO Language Keywords
+- Fix: lexMakeEOF & Add Folding / Fix: remove MSVC10 dependency
+- Fix: lua: more flexibility while loading hunspell.dll
+- Add: lua: luasocket, mime, http, sha2, underscore & serpent. Add Tests
+- New: lua: Events OnClick (singleClick) && OnInit (called once on Scite Startup) 
+- New: lexer: Highlight eMail Links && Highlight GUIDs / Increase FindMarks Speed. 
+- New: lua: AutoComplete any enabled by default.
+- New: Theme: Adapted theme solarized
+- New: CRC Verify SciLexer.dll during Start. 
+- Upd: Based on scintilla-scite 3.7.5 now. (was 3.7.0)
+
+[09.10.2017] myScite.stable.160.Augustine
 - API: Actionscript3, FreeBasic, ArduinoC. Ordered cpp by header.
 - Theming: TonedDown Colors to be more EyeFriendly and readable.
 - Lexer: enhanced Makefile Lexer Features. (keywords and styles) 
 - Lexer: Added scintillua antlr lexer. 
 - luaLibs: moved shell.dll->ibox to gui.dll. (Now more efficient and 50% smaller.)
-- others: more Fun for lua Testcases :) Reactos: recompiled with MinGW & MSVC8
+- others: more Fun for lua Testcases :) Reactos: recompiled with MinGW & MSVC10
 
-[29.06.2017] mySciTE.June
+[29.06.2017] mySciTE.stable.153.June
 - antialiased fonts. Style .json & .mib Files. / Add Forth and Fortran api.
 - lua repo: unified mingw makefiles. / Recompiled all libs with Os for a better opt balance.
 - included luasocket (ip socket support) 
