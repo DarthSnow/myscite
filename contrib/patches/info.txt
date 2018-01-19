@@ -1,0 +1,42 @@
+ ~ How to apply the patches to vanilla SciTEs Sources ~
+
+-- Note: if you are about to patch using an MSYS/CygWin/GITbash or alike,
+-- make sure to deactivate Windows Automatic case conversion "Feature"
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced]
+"DontPrettyPath"=dword:00000001
+
+--
+
+-- Download the sources. For SciTE 3.7.5 you would choose:
+[ https://sourceforge.net/p/scintilla/scite/ci/rel-3-7-5/tree/ ]
+
+-- Extract that archive to a local folder.
+-- Rename your downloaded sources to [scintilla-scite]. 
+-- open a shell window and do
+    
+ patch -p0 < 1.env.userhome.diff
+ patch -p0 < 2.transparency.diff
+ (...)
+
+-- If your jobs gone well you should see lines like:
+
+ $ patch -p0 <6.cleanOptionsMenue.diff
+ patching file scintilla-scite/src/SciTE.h
+ patching file scintilla-scite/src/SciTEBase.cxx
+ patching file scintilla-scite/src/SciTEBase.h
+ patching file scintilla-scite/src/SciTEIO.cxx
+ (...)
+ 
+ -- Now you should be set --
+ 
+ ~ Notes on executables Filesize ~
+
+    If your needs require you to - 
+    Scintilla.dll can be easily runtime compressed.
+    see [ http://upx.sourceforge.net/ ]
+
+    SciTEs binaries can bee statically (un)linked to libgcc (size. +-1M)
+    just modify the flag -static to LDFLAGS within the makefile.
+    
+    Okay.. So HaveFun(tm) - Arjunae 

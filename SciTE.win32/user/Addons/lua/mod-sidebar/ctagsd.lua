@@ -1,11 +1,22 @@
--- browse a tags database from SciTE!
--- Set this property:
--- ctags.path.php=<full path to tags file>
--- 1. Multiple tags are handled correctly; a drop-down
--- list is presented
--- 2. There is a full stack of marks available.
--- 3. If ctags.path.php is not defined, will try to find a tags file in the current dir.
+--[[
 
+-- Browse a tags database from SciTE!
+-- 02.12.2017 -> Arjunae: 
+-- Extman support / project.ctags.filename / project.path / ALT-Click Tag!
+--
+-- Set this property:
+-- project.ctags.filename=<full path to tags file>
+-- 1. Multiple tags are handled correctly; a drop-down list is presented
+-- 2. There is a full stack of marks available.
+-- 3. If $(project.path) is not defined, will try to find a tags file in the current dir.
+-- 4. if $(project.path) is defined assume --tag-relative=yes  (Tags relative to project.path)
+--     otherwise assume fully qualified Pathes in Tagfile
+
+]]
+
+local GTK = scite_GetProp('PLAT_GTK')
+if GTK then dirSep="/" else dirSep="\\" end
+  
 if scite_Command then
 scite_Command {
 --  'Find Tag|find_ctag  $(CurrentWord)|Ctrl+.',
@@ -15,14 +26,13 @@ scite_Command {
 }
 end
 
-
 local gMarkStack = {}
 local gMarkStack = {}
 local sizeof = table.getn
 local push = table.insert
 local pop = table.remove
 local top = function(s) return s[sizeof(s)] end
-local _UserListSelection
+local _UserListSelect
 
 
 -- Parse string
@@ -120,11 +130,12 @@ local tags
 
 local function OpenTag(tag)
   -- ask SciTE to open the file
-  local file_name = tag.file
-  local path = extract_path(gTagFile)
-  --if path then file_name = path..'/'..file_name end
+  local fileNamePath
+  local path= extract_path(gTagFile)
+  if path  then fileNamePath= tag.file end
+  if props["project.path"]~="" then fileNamePath = path..dirSep..tag.file end --Project relative Path
   set_mark()
-  scite.Open(file_name)
+  scite.Open(fileNamePath)
   -- depending on what kind of tag, either search for the pattern,
   -- or go to the line.
   local pattern = tag.pattern
@@ -161,21 +172,18 @@ function locate_tags(dir)
     return filefound
 end
 
-
 function find_ctag(f,partial)
   -- search for tags files first
   local result
-  result = props['ctags.path.php']
-  if not result then
-    result = locate_tags(props['FileDir'])
-  end
+  result = props['project.path'] ..dirSep.. props['project.ctags.filename']
+  if not result then result = locate_tags(props['FileDir']) end
   if not result then
     print("No tags found!")
     return
   end
 
   if result ~= gTagFile then
-    --print("Reloading tag from:"..result)
+ --   print("Reloading tag from:"..result)
     gTagFile = result
     tags = ReadTagFile(gTagFile)
   end
@@ -209,13 +217,15 @@ function find_ctag(f,partial)
     for i,t in ipairs(matches) do
       table.insert(list,i..' '..t.file..':'..t.pattern)
     end
+
     scite_UserListShow(list,1,function(s)
        local _,_,tok = find(s,'^(%d+)')
        local idx = tonumber(tok) -- very important!
        OpenTag(matches[idx])
-     end)
+      end
+    )
   else
-       OpenTag(matches[1]) 
+      OpenTag(matches[1]) 
   end
 end
 
@@ -243,28 +253,33 @@ function reset_tags()
     tags     = {}
 end
 
--- the handler is always reset!
-function scite_UserListShow(list,start,fn)
-  local s = ''
-  local sep = '#'
-  local n = sizeof(list)
-  for i = start,n-1 do
-      s = s..list[i]..sep
+--
+-- wordAtPosition()
+-- Returns the whole keyword under the cursor
+--
+function wordAtPosition()
+  local pos = editor.CurrentPos
+  local startPos=pos
+  local lineEnd = editor.LineEndPosition[editor:LineFromPosition(pos)]
+  local whatever,endPos = editor:findtext("[^a-zA-z0-9_-*]",SCFIND_REGEXP,pos,lineEnd) --words EndPos
+  if not endPos then endPos=lineEnd end
+  local tmp=""
+  
+  --search backwards for a Delimiter
+  while not string.find(editor:textrange(startPos,startPos+1),"[^%w_-]+")  do
+    startPos=startPos-1
   end
-  s = s..list[n]
-  s = s:gsub('\t',' '):gsub('[ \t]+',' '):gsub('[ ]+$','')
-  _UserListSelection = fn
-  local pane = editor
-  if not pane.Focus then pane = output end
-  pane.AutoCSeparator = string.byte(sep)
-  pane:UserListShow(13,s)
-  pane.AutoCSeparator = string.byte(' ')
+  tmp=editor:textrange(startPos+1,endPos-1)
+  return string.match(tmp,"[%w_-]+") -- just be sure. only return the keyword
 end
 
-AddEventHandler("OnUserListSelection", function(tp,str)
-  if _UserListSelection then
-     local callback = _UserListSelection
-     _UserListSelection = nil
-     return callback(str)
-  else return false end
-end)
+function modifiers(shift,strg,alt,x)
+--print(wordAtPosition())
+scite.SendEditor(SCI_STYLESETSIZE,32,6)
+if alt==true then find_ctag (wordAtPosition()) end
+scite.SendEditor(SCI_STYLESETSIZE,32,9)
+
+end
+
+scite_OnClick(modifiers)
+

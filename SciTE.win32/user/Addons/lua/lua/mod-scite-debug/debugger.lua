@@ -4,7 +4,7 @@
 -- (1) debug.backtrace.depth will configure depth of stack frame dump (default is 20)
 -- (3) first generalized version
 
-require "lfs" --chdir
+if lfs==nil then err,lfs = pcall( require,"lfs")  end --chdir
 
 local GTK = scite_GetProp('PLAT_GTK')
 local stripText = ''
@@ -124,9 +124,12 @@ function edit(f)
 end
 
 
-function cd(path)
- --  os.chdir(path)
- lfs.chdir(path)
+function cd(path) 
+	if lfs then
+		lfs.chdir(path)
+	else
+		os.chdir(path)
+	end
 end
 
 function eval_lua(line)
@@ -217,7 +220,7 @@ function Dbg:default_target()
     if ext then
 		-- Ndless SDK: don't use a relative path. Use any ELF file.
       --  local res = props['FileDir']..'\\' --scite_webdev
-         local res = props['FileName'] -- Arjunae
+         local res = props['FileName'] -- c scite_webdev
 		  if ext ~= '' then res = res..'.'..ext end
         return res
     else
@@ -398,7 +401,7 @@ function do_run()
 				scite.StripShow("!'Target name:'["..props['FilePath'].."]((OK))(&Cancel)")
 				return
 		end
-			lfs.chdir(props['FileDir']) 
+		if lfs then lfs.chdir(props['FileDir']) else os.chdir(props['FileDir'])	end
 		if	do_launch() then
 			set_status('running')
 		else
@@ -742,7 +745,7 @@ end
 -- find the Unix/GTK equivalent! It is meant to bring the debugger
 -- SciTE instance to the front.
 function raise_scite()
-	spawner.foreground()
+	--spawner.foreground()
 end
 
 -- output of inspected variables goes here; this mechanism allows us
@@ -759,10 +762,10 @@ end
 function closing_process()
     print 'quitting debugger'
 	 stripText=""
-	--spawner_obj:close()
+--	spawner_obj:close()
     set_status('idle')
     if catdbg ~= nil then print(catdbg); catdbg:close() end
-	scite_LeaveInteractivePrompt()   
+-- scite_LeaveInteractivePrompt()   
 	RemoveLastMarker(true)
 	os.remove(dbg.cmd_file)
 end

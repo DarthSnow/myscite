@@ -1,5 +1,17 @@
 ~ mySciTE.webdev ~
 
+[19.01.2018] mySciTE.190.MartyMcFly (Lua5.1 & Lua5.3)
+- Add: SciTE Project Support. Settings for scite sources included.
+- Add: cTags Navigation support within project source files. ( ALT-Click )
+- Add: cTags based, cached Projects and Platform SDK sourceCode Highlightening. 
+- Upd: cTags and Artistic Style. /Upd: Autocomplete and theme.solarized.
+- Upd: c89,90,95,03,11 docs from en.wikibooks.org for Syntax Highlightening *kudos*.
+- New: Properties max.style.size and window.flatui.
+- New: Highlight Current Word Counter in Status Bar.
+- Fix: StartUp Performance heavily improved.
+- Info: Dual Release. Lua5.1.5 and Lua5.3.4 available.  
+- Contains Scintillua, Hunspell, Exuberant cTags and aStyle.
+
 [25.11.2017] mySciTE.stable.180.Artie
 - Add: Lisp / Scheme / Clojure / GO Language Keywords
 - Fix: lexMakeEOF & Add Folding / Fix: remove MSVC10 dependency
