@@ -1,5 +1,11 @@
 ~ mySciTE.webdev ~
 
+[13.07.2018] myScite.190a.MartyMcFly (Lua5.1 & Lua5.3)
+=Maintenance Release=
+Fix: Fixes for Language Support and Themeing
+Upd: Enhanced LexMake
+Add: Added Installer
+ 
 [19.01.2018] mySciTE.190.MartyMcFly (Lua5.1 & Lua5.3)
 - Add: SciTE Project Support. Settings for scite sources included.
 - Add: cTags Navigation support within project source files. ( ALT-Click )

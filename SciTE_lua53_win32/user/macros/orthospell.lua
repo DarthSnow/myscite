@@ -431,7 +431,7 @@ function create_regEx()
 	local wreg = "(["
 	local lngReg = string.gsub(langChars,"%-","%%-")
 	if cpMode > 1 then  -- document is UTF-8
-		wreg = wreg..utfChars..guil.to_utf8(lngReg)
+		wreg = wreg..utfChars..gui.to_utf8(lngReg)
 	else
 		wreg = wreg..isoChars..lngReg
 	end

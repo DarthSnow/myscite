@@ -36,10 +36,6 @@ dofile(myHome..'\\Addons\\lua\\mod-extman\\eventmanager.lua')
 -- Load mod-mitchell
 package.path = package.path .. ";"..myHome.."\\Addons\\lua\\mod-mitchell\\?.lua;"
 dofile(myHome..'\\Addons\\lua\\mod-mitchell\\scite.lua')
-		
--- Load Sidebar
-package.path = package.path .. ";"..myHome.."\\Addons\\lua\\mod-sidebar\\?.lua;"
-dofile(myHome..'\\Addons\\lua\\mod-sidebar\\sidebar.lua')
 
 -- Load cTags Browser
 dofile(myHome..'\\Addons\\lua\\mod-ctags\\ctagsd.lua')
@@ -197,11 +193,13 @@ function OnInit()
 	scite_OnSave(CTagsRecreate)
 	scite_OnOpenSwitch(myScite_OpenSwitch)
 	
+	-- Load Sidebar
+	package.path = package.path .. ";"..myHome.."\\Addons\\lua\\mod-sidebar\\?.lua;"
+	dofile(myHome..'\\Addons\\lua\\mod-sidebar\\sidebar.lua')
+
 -- print("Modules Memory usage:",collectgarbage("count")*1024-_G.session_used_memory)	
 -- scite.MenuCommand(IDM_MONOFONT) -- force Monospace	
---print("startupScript_reload")
---print(editor.StyleAt[1])
---print(props["Path"])
+-- print(editor.StyleAt[1])
 
 end
 --~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

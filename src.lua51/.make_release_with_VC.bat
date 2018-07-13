@@ -1,24 +1,24 @@
 @echo off
-REM for make debug version use: 
-REM >make_with_VC.bat DEBUG
+REM for make debug version use:  make_with_VC.bat DEBUG
 
-::set VS140COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\
-set VS900COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio 9.0\Common7\Tools\
-
-::set PATH=C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\bin;%PATH%
-setlocal
-
-::--------------------------------------------------
-FOR /f "tokens=2 delims==" %%a IN ('SET ^| FINDSTR /b /i /r /c:"VS[0-9]*COMNTOOLS"') DO SET Tools=%%a
-if "%Tools%"=="" (
-	echo VS COMNTOOLS Environment NOT FOUND!
-	exit /b 1
+REM First, we search for any installed Visual studio versions
+for /F "tokens=* " %%i in ('reg query HKEY_LOCAL_MACHINE\SOFTWARE\Classes\WOW6432Node\CLSID /d /s /f vcbuild.dll  ') DO (
+	REM Now we write all their Pathes into a file
+ for /F "tokens=1,2* " %%j in ('@echo "%%i" ^| findstr vcbuild.dll ') DO (
+	set dupeCheck=vcDllPath && set vcDllPath=%%l
+	if [%dupeCheck%] neq [%vcDllPath%]	call :set_vcPath	
+	)
 )
-::call "%Tools%vcvars32.bat"
-::--------------------------------------------------
 
-::call vcvars32.bat
-::call vcvarsall.bat amd64
+REM ~~ found a Path, so call its path setup script. 
+:set_vcPath
+		set vcPath=%vcDllPath:vcpackages\vcbuild.dll" =%
+		set vcPath=%vcPath%common7\tools
+		call "%vcPath%vcvarsqueryregistry.bat"
+		set vcDllPath=&& set dupeCheck=
+		exit /b 0
+:end_sub
+
 call vcvarsall.bat x86
 
 if "%1"=="DEBUG" set parameter1=DEBUG=1
