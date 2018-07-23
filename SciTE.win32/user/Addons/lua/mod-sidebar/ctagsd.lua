@@ -2,11 +2,12 @@
 
 -- Browse a tags database from SciTE!
 -- 02.12.2017 -> Arjunae: 
--- Extman support / project.ctags.filename / project.path / ALT-Click Tag!
+-- Extman support / project.ctags.filename / project.path /  project.ctags.list_one & ALT-Click Tag!
 --
 -- Set this property:
 -- project.ctags.filename=<full path to tags file>
 -- 1. Multiple tags are handled correctly; a drop-down list is presented
+--     Define project.ctags.list_one="1" to force showing a list for single entries.
 -- 2. There is a full stack of marks available.
 -- 3. If $(project.path) is not defined, will try to find a tags file in the current dir.
 -- 4. if $(project.path) is defined assume --tag-relative=yes  (Tags relative to project.path)
@@ -36,7 +37,7 @@ local _UserListSelect
 
 
 -- Parse string
-function eval(str)
+local function eval(str)
     if type(str) == "string" then
         return loadstring("return " .. str)()
     elseif type(str) == "number" then
@@ -48,7 +49,7 @@ end
 
 -- this centers the cursor position
 -- easy enough to make it optional!
-function ctags_center_pos(line)
+local function ctags_center_pos(line)
   if not line then
      line = editor:LineFromPosition(editor.CurrentPos)
   end
@@ -106,6 +107,7 @@ local function extract_path(path)
 end
 
 local function ReadTagFile(file)
+ -- if not tags then return nil end
   local f = io.open(file)
   if not f then return nil end
   local tags = {}
@@ -130,8 +132,11 @@ local tags
 
 local function OpenTag(tag)
   -- ask SciTE to open the file
+  
+  if not tag then return end
   local fileNamePath
   local path= extract_path(gTagFile)
+
   if path  then fileNamePath= tag.file end
   if props["project.path"]~="" then fileNamePath = path..dirSep..tag.file end --Project relative Path
   set_mark()
@@ -153,8 +158,8 @@ local function OpenTag(tag)
   end
 end
 
-function locate_tags(dir)
---function test(dir)
+local function locate_tags(dir)
+
     local filefound = nil
     local slash, f
     _,_,slash = string.find(dir,"([/\\])")
@@ -172,7 +177,7 @@ function locate_tags(dir)
     return filefound
 end
 
-function find_ctag(f,partial)
+local function find_ctag(f,partial)
   -- search for tags files first
   local result
   result = props['project.path'] ..dirSep.. props['project.ctags.filename']
@@ -212,7 +217,9 @@ function find_ctag(f,partial)
   end
 
   if k == 0 then return end
-  if k > 1 then -- multiple tags found
+
+  
+  if k > 1  or props["project.ctags.list_one"]=="1"  then -- multiple tags found
     local list = {}
     for i,t in ipairs(matches) do
       table.insert(list,i..' '..t.file..':'..t.pattern)
@@ -229,8 +236,8 @@ function find_ctag(f,partial)
   end
 end
 
-function locate_tags(dir)
---function test(dir)
+local function locate_tags(dir)
+
     local filefound = nil
     local slash, f
     _,_,slash = string.find(dir,"([/\\])")
@@ -257,7 +264,7 @@ end
 -- wordAtPosition()
 -- Returns the whole keyword under the cursor
 --
-function wordAtPosition()
+local function wordAtPosition()
   local pos = editor.CurrentPos
   local startPos=pos
   local lineEnd = editor.LineEndPosition[editor:LineFromPosition(pos)]
@@ -273,13 +280,21 @@ function wordAtPosition()
   return string.match(tmp,"[%w_-]+") -- just be sure. only return the keyword
 end
 
+--
+-- checks for modifierKeys used during the click event
+-- changes/restores userlist Font Size
+--
 function modifiers(shift,strg,alt,x)
---print(wordAtPosition())
-scite.SendEditor(SCI_STYLESETSIZE,32,6)
-if alt==true then find_ctag (wordAtPosition()) end
-scite.SendEditor(SCI_STYLESETSIZE,32,9)
 
+  if (OnDoubleClick or OnChar or OnSwitchFile) and not scite_Command then
+    print("ctagsd.lua>There is a handler conflict, please use extman")
+    return
+  end
+
+  if alt==true then
+    find_ctag (wordAtPosition()) 
+  end
+ 
 end
 
 scite_OnClick(modifiers)
-

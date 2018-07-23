@@ -275,28 +275,20 @@ local next_user_id = 13 -- arbitrary
 
 -- the handler is always reset!
 function scite_UserListShow(list,start,fn)
-  local separators = {' ', ';', '@', '?', '~', ':'}
-  local separator
-  local s = table.concat(list)
-  for i, sep in ipairs(separators) do
-    if not string.find(s, sep, 1, true) then
-      s = table.concat(list, sep, start)
-      separator = sep
-      break
-    end
+  local s = ''
+  local sep = '#'
+  local n = #list
+  for i = start,n-1 do
+      s = s..list[i]..sep
   end
-  -- we could not find a good separator, set it arbitrarily
-  if not separator then
-    separator = '@'
-    s = table.concat(list, separator, start)
-  end
+  s = s..list[n]
+  s = s:gsub('\t',' '):gsub('[ \t]+',' '):gsub('[ ]+$','')
   _UserListSelection = fn
   local pane = editor
   if not pane.Focus then pane = output end
-  pane.AutoCSeparator = string.byte(separator)
-  pane:UserListShow(next_user_id,s)
+  pane.AutoCSeparator = string.byte(sep)
+  pane:UserListShow(13,s)
   pane.AutoCSeparator = string.byte(' ')
-  return true
 end
 
  local word_start,in_word,current_word
@@ -461,8 +453,6 @@ end
 -- on os.execute
 function scite_Popen(cmd)
     if spawner then
-        spawner.verbose(scite_GetPropBool('debug.spawner.verbose',true))
-        spawner.fulllines(1)
         return spawner.popen(cmd)
     else
         cmd = cmd..' > '..tempfile

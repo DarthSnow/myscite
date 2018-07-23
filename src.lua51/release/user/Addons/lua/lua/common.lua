@@ -42,6 +42,26 @@ function DetectUTF8()
 	end
 end
 
+-----------------------
+-- retrieve a HTTP URL
+-- write to var httpResponse
+-----------------------
+function testHTTP(sURL)
+	
+	if props["httpResponse"]~="" then return end
+	-- load the http module
+	local socket = require "socket"
+	local io = require("io")
+	local ltn12 = require("ltn12")
+	local http = require("socket.http")
+
+	if not sURL then sURL="http://www.google.de/search?q=myScite&oq=myScite" end
+	content, status, auth = http.request(sURL)
+	--print("response:", content) -- response
+	--print("response code:", status) -- status code
+	props["httpResponse"]=content
+end
+
 --------------------------
 -- quickCheck a files CRC32 Hash 
 --------------------------
@@ -71,14 +91,19 @@ function fileHash(fileName)
 
 	return CRChash
 end
---[[
+
 -- check SciLexer once per session and inform the User if its a nonStock Version.
 
 local SLHash
 if not SLHash then SLHash=fileHash( props["SciteDefaultHome"].."\\SciLexer.dll" )  
 	if SLHash and SLHash~=props["SciLexerHash"] then print("common.lua: You are using a modified SciLexer.dll with CRC32 Hash: "..SLHash) end
+	-- Check for Updates on Scite Close 
+	-- scite_OnClose(testHTTP)
 end
-]]
+
+-- keep Track of current Bytes Offset (for Statusbar)
+scite_OnKey( function()  props["CurrentPos"]=editor.CurrentPos end )
+
 --------------------------
 -- returns the size of a given file.
 --------------------------
@@ -100,7 +125,51 @@ function file_size (filePath)
 end
 
 --~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- File and Path related functions, used in debugger.lua
 
+-- returns i characters at position s as a string
+local function at (s,i)
+    return s:sub(i,i)
+end
+
+--- note: for finding the last occurance of a character, it's actualy
+--- easier to do it in an explicit loop rather than use patterns.
+--- (These are not time-critcal functions)
+local function split_last (s,ch)
+    local i = #s
+    while i > 0 do
+        if at(s,i) == ch then
+            return s:sub(i+1),i
+        end
+        i = i - 1
+    end
+end
+
+function basename(s)
+    local res = split_last(s,dirsep)
+    if res then return res else return s end
+end
+
+function path_of (s)
+	local basename,idx = split_last(s,dirsep)
+	if idx then
+		return s:sub(1,idx-1)
+	else
+		return ''
+	end
+end
+
+function extension_of (s)
+    return split_last(s,'.')
+end
+
+function filename(path)
+    local fname = basename(path)
+    local _,idx = split_last(fname,'.')
+    if idx then return fname:sub(1,idx-1) else return fname end
+end
+
+--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 --line information functions --
 
 --
@@ -137,8 +206,7 @@ function start_line_position(line)
 	return editor.LineEndPosition[line]
 end
 
--- what is the word directly behind the cursor?
--- returns the word and its position.
+-- returns the word and its position directly behind the cursor.
 function word_at_cursor()
 	local pos = editor.CurrentPos
 	local line_start = start_line_position()
@@ -158,17 +226,19 @@ function center_line(line)
 	editor:LineScroll(0,line - middle)
 end
 
+-- Trims space chars from a strings end
+function rtrim(s)
+    return string.gsub(s,'%s*$','')
+end
+
+--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--colour information functions --
 
 -- allows you to use standard HTML '#RRGGBB' colours;
 function colour_parse(str)
 	-- Wo for nil value
 	if str == nil then str ="#AAFFAA" end
 	return tonumber(sub(str,6,7)..sub(str,4,5)..sub(str,2,4),16)
-end
-
-
-function rtrim(s)
-    return string.gsub(s,'%s*$','')
 end
 
 --------------------------

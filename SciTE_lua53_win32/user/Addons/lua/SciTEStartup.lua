@@ -1,5 +1,5 @@
 --
--- mySciTE's Lua Startup Script 2017 Marcedo@HabMalNeFrage.de
+-- mySciTE's Lua Startup Script 2018 Marcedo@HabMalNeFrage.de
 --
 --~~~~~~~~~~~~~
 
@@ -16,35 +16,22 @@ package.cpath = package.cpath .. ";"..myHome.."\\Addons\\lua\\c\\?.dll;"
 dirSep, GTK = props['PLAT_GTK']
 if GTK then dirSep = '/' else dirSep = '\\' end
 
---lua >=5.2.x renamed functions:
-local unpack = table.unpack or unpack
-math.mod = math.fmod or math.mod
-string.gfind = string.gmatch or string.gfind
---lua >=5.2.x replaced table.getn(x) with #x
---~~~~~~~~~~~~~
-
--- track the amount of lua allocated memory
-_G.session_used_memory=collectgarbage("count")*1024
-	
 -- Load extman.lua
 -- This will automatically run any lua script located in \User\Addons\lua\lua
 dofile(myHome..'\\Addons\\lua\\mod-extman\\extman.lua')
 
--- chainload eventmanager / extman remake used by some lua mods
-dofile(myHome..'\\Addons\\lua\\mod-extman\\eventmanager.lua')
-
--- Load mod-mitchell
-package.path = package.path .. ";"..myHome.."\\Addons\\lua\\mod-mitchell\\?.lua;"
-dofile(myHome..'\\Addons\\lua\\mod-mitchell\\scite.lua')
-
--- Load cTags Browser
-dofile(myHome..'\\Addons\\lua\\mod-ctags\\ctagsd.lua')
-
 -- Load Project support functions
 dofile(myHome..'\\Addons\\lua\\SciTEProject.lua')
 
---~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- track the amount of lua allocated memory
+_G.session_used_memory=collectgarbage("count")*1024
 
+--lua >=5.2.x replaced table.getn(x) with #x
+--lua >=5.2.x renamed functions:
+local unpack = table.unpack or unpack
+math.mod = math.fmod or math.mod
+string.gfind = string.gmatch or string.gfind
+	
 -- ##################  Lua Samples #####################
 --   ##############################################
 
@@ -71,7 +58,7 @@ function markLinks()
 	end
 
 --	
--- Now mark any params and their Values - based in above text URLS
+-- Now mark any params and their Values - based ob above found text URL's
 -- http://www.test.de/?key1=test&key2=a12
 
 	-- Keys 
@@ -100,8 +87,8 @@ function markLinks()
 		local sB,eB = editor:findtext(mask_c, SCFIND_REGEXP, 0)
 		while sB do
 			if editor:IndicatorValueAt(marker_a,sB)==1 then
-				EditorMarkText(sB+1, (eB-sB)-1, marker_c)
-			end -- common.lua
+				EditorMarkText(sB+1, (eB-sB)-1, marker_c) -- common.lua
+			end 
 			sB,eB = editor:findtext( mask_c, SCFIND_REGEXP, sB+1)
 		end
 	end
@@ -170,10 +157,12 @@ function myScite_OpenSwitch()
 			markeMail()
 			markGUID()
 			DetectUTF8()
+			props["eol.auto"]=0
 			props["find.strip.incremental"]=2
 			props["highlight.current.word"]=1	
 			props["status.msg.words_found"]="| Words Found: $(highlight.current.word.counter)"			
 		else
+			props["eol.auto"]=0
 			props["highlight.current.word"]=0
 			props["find.strip.incremental"]=1
 			props["status.msg.words_found"]=""
@@ -181,25 +170,36 @@ function myScite_OpenSwitch()
 	end
 scite.ApplyProperties()
 end
+
 --~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 function OnInit() 
 --
 -- called after above and only once when Scite starts (SciteStartups DocumentReady)
 --
-
-	-- Event Handlers
-	scite_OnOpenSwitch(CTagsUpdateProps,false,"")
-	scite_OnSave(CTagsRecreate)
-	scite_OnOpenSwitch(myScite_OpenSwitch)
 	
-	-- Load Sidebar
+	-- chainload eventmanager / extman remake used by some lua mods
+	dofile(myHome..'\\Addons\\lua\\mod-extman\\eventmanager.lua')
+
+	-- Load mod-mitchell
+	package.path = package.path .. ";"..myHome.."\\Addons\\lua\\mod-mitchell\\?.lua;"
+	--dofile(myHome..'\\Addons\\lua\\mod-mitchell\\scite.lua')
+
+	-- Load cTags Browser
+	package.path = package.path .. ";"..myHome.."\\Addons\\lua\\mod-ctags\\?.lua;"
+	dofile(myHome..'\\Addons\\lua\\mod-ctags\\ctagsd.lua')
+	
+	-- Show Sidebar
 	package.path = package.path .. ";"..myHome.."\\Addons\\lua\\mod-sidebar\\?.lua;"
 	dofile(myHome..'\\Addons\\lua\\mod-sidebar\\sidebar.lua')
 
+		-- Event Handlers
+	scite_OnOpenSwitch(CTagsUpdateProps,false,"")
+	scite_OnSave(CTagsRecreate)
+	scite_OnOpenSwitch(myScite_OpenSwitch)
+
 -- print("Modules Memory usage:",collectgarbage("count")*1024-_G.session_used_memory)	
--- scite.MenuCommand(IDM_MONOFONT) -- force Monospace	
--- print(editor.StyleAt[1])
+-- print("startupScript_reload")
 
 end
 --~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
